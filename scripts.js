@@ -17,7 +17,7 @@ const transactions = [
     {
         id: 1,
         description: 'Luz',
-        amount: -50000,
+        amount: -50001,
         date: '23/01/2021',
     }, 
     {
@@ -44,15 +44,31 @@ const transactions = [
 
 const Transaction = {
     incomes() {
-        // somar as entradas
+        let incomeTotal = 0;
+        
+        transactions.forEach(transaction => {
+            if(transaction.amount > 0){
+                incomeTotal += transaction.amount;
+            }
+        })
+        
+        return incomeTotal;
 
     },
     expenses() {
-        // somar as saídas
+        let expenseTotal = 0;
+
+        transactions.forEach(transaction => {
+            if(transaction.amount < 0){
+                expenseTotal += transaction.amount;
+            }
+        })
+
+        return expenseTotal;
 
     },
     total() {
-        // entradas - saídas
+        return this.incomes() + this.expenses();
 
     }
 }
@@ -77,7 +93,7 @@ const DOM = {
         const html = `
         <tr>
             <td class="description">${transaction.description}</td>
-            <td class=${CSSclass}>${transaction.amount}</td>
+            <td class=${CSSclass}>${amount}</td>
             <td class="date">${transaction.date}</td>
             <td>
                 <img src="./assets/minus.svg" alt="Remover transação">
@@ -86,15 +102,34 @@ const DOM = {
         `
 
         return html
+    }, 
+
+    updateBalance() {
+        document.getElementById('incomeDisplay').innerHTML = Utils.formatCurrency(Transaction.incomes())
+        document.getElementById('expenseDisplay').innerHTML = Utils.formatCurrency(Transaction.expenses())
+        document.getElementById('totalDisplay').innerHTML = Utils.formatCurrency(Transaction.total())
     }
 }
 
 const Utils = {
     formatCurrency(value) {
-        const signal = Number(value) < 0 ? "-" : ""
+        const signal = Number(value) < 0 ? "-" : "";
+
+        value = String(value).replace(/\D/g, "");
+
+        value = Number(value) / 100;
+
+        value = value.toLocaleString("pt-Br", {
+            style: "currency",
+            currency: "BRL"
+        })
+
+        return signal + value;
     }
 }
 
 transactions.forEach(function(transaction){
     DOM.addTransaction(transaction)
 })
+
+DOM.updateBalance();

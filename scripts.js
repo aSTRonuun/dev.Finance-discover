@@ -13,40 +13,47 @@ const Modal = {
     }
 }
 
-const transactions = [
-    {
-        id: 1,
-        description: 'Luz',
-        amount: -50001,
-        date: '23/01/2021',
-    }, 
-    {
-        id: 2,
-        description: 'Criação website',
-        amount: 500000,
-        date: '23/01/2021',
-
-    },
-    {
-        id: 3,
-        description: 'Internet',
-        amount: -20000,
-        date: '23/01/2021',
-    },
-    {
-        id: 4,
-        description: 'APP',
-        amount: 400000,
-        date: '23/01/2021',
-    },
-]
-
-
 const Transaction = {
+    all: [
+        {
+            description: 'Luz',
+            amount: -50001,
+            date: '23/01/2021',
+        }, 
+        {
+            description: 'Criação website',
+            amount: 500000,
+            date: '23/01/2021',
+    
+        },
+        {
+            description: 'Internet',
+            amount: -20000,
+            date: '23/01/2021',
+        },
+        {
+            description: 'APP',
+            amount: 400000,
+            date: '23/01/2021',
+        },
+    ],
+
+    add(transaction) {
+        Transaction.all.push(transaction);
+
+        App.realod()
+    },
+
+    remove(index) {
+        Transaction.all.splice(index, 1);
+
+        App.realod();
+    },
+
     incomes() {
         let incomeTotal = 0;
         
-        transactions.forEach(transaction => {
+        Transaction.all.forEach(transaction => {
             if(transaction.amount > 0){
                 incomeTotal += transaction.amount;
             }
@@ -55,10 +62,11 @@ const Transaction = {
         return incomeTotal;
 
     },
+
     expenses() {
         let expenseTotal = 0;
 
-        transactions.forEach(transaction => {
+        Transaction.all.forEach(transaction => {
             if(transaction.amount < 0){
                 expenseTotal += transaction.amount;
             }
@@ -67,6 +75,7 @@ const Transaction = {
         return expenseTotal;
 
     },
+
     total() {
         return this.incomes() + this.expenses();
 
@@ -108,6 +117,10 @@ const DOM = {
         document.getElementById('incomeDisplay').innerHTML = Utils.formatCurrency(Transaction.incomes())
         document.getElementById('expenseDisplay').innerHTML = Utils.formatCurrency(Transaction.expenses())
         document.getElementById('totalDisplay').innerHTML = Utils.formatCurrency(Transaction.total())
+    },
+
+    clearTransactions() {
+        DOM.transactionsContainer.innerHTML = ""
     }
 }
 
@@ -128,8 +141,81 @@ const Utils = {
     }
 }
 
-transactions.forEach(function(transaction){
-    DOM.addTransaction(transaction)
+const App = {
+    init() {
+        Transaction.all.forEach(transaction => {
+            DOM.addTransaction(transaction)
+        })
+        
+        DOM.updateBalance();
+        
+        
+    },
+
+    realod() {
+
+        DOM.clearTransactions();
+        App.init();
+    },
+}
+
+const Form = {
+    description: document.querySelector('input#description'),
+    amount: document.querySelector('input#amount'),
+    date: document.querySelector('input#date'),
+
+    getValues() {
+        return {
+            description: Form.description.value,
+            amount: Form.amount.value,
+            date: Form.date.value
+        }
+    },
+
+    validateFilds() {
+        const {description, amount, date} = Form.getValues();
+        
+        if( description.trim() === "" ||
+            amount.trim() === "" ||
+            date.trim() === "") {
+                throw new Error("Por favor, preencha todos os campos.")
+            }
+    },
+
+    formatData() {
+
+    },
+
+    submit(event) {
+        event.preventDefault();
+
+        try {
+            //verifcar se todas os campos estão preenchidos
+            Form.validateFilds();
+
+            // formartar os dados para salvar
+            Form.formatData()
+        }catch(error) {
+            alert(error.message);
+        }
+
+        
+    }
+}
+
+App.init()
+
+Transaction.add({
+    id:39,
+    description: 'Plastation',
+    amount: 410000,
+    date: '23/02/2021'
 })
 
-DOM.updateBalance();
+Transaction.remove(4)
+
+
+
+
+
+

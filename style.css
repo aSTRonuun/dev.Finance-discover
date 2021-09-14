@@ -210,6 +210,10 @@ td.expense {
     color: #e92929;
 }
 
+.icon-rmv:hover {
+    cursor: pointer;
+}
+
 /* =============== Modal ================= */
 .modal-overlay {
     width: 100%;
